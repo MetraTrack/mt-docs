@@ -1,0 +1,34 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title MetraTrack – C4 Context Diagram
+
+Person("user", "User", "Interacts through Telegram and uses a Samsung Galaxy Watch")
+
+System_Ext("watch", "Samsung Galaxy Watch", "Tracks steps; heart rate; workouts; sleep; recovery")
+System_Ext("companion", "Android Companion App", "mt-companion; Angular Native app syncing Samsung Health data")
+System_Ext("openai", "OpenAI API", "GPT-5 Vision and Text models for calorie estimation and summaries")
+
+System_Boundary("mt_system", "MetraTrack Internal System") {
+
+    System("telegram_ux", "Telegram UX Layer", "mt-bot and mt-miniapp; Telegram bot and Angular mini-app used for inputs and onboarding")
+
+    System("mt_backend", "MetraTrack Backend", "mt-backend; NestJS core logic for plans; analytics; Samsung sync; OpenAI integration")
+
+}
+
+Rel("user", "watch", "uses for activity tracking", "Physical interaction")
+Rel("watch", "companion", "syncs health and activity data", "Samsung Health / Health Connect")
+
+Rel("companion", "mt_backend", "sends synced health data: steps; workouts; calories; HR; sleep; recovery")
+
+Rel("user", "telegram_ux", "inputs weight; food photos; food text; onboarding data", "Telegram")
+Rel("telegram_ux", "user", "notifies and reminds user; sends reports and weekly summaries", "Telegram messages")
+
+Rel("telegram_ux", "mt_backend", "sends structured input: weight; food; plan JSON")
+Rel("mt_backend", "telegram_ux", "sends notifications and summaries: reminders; weekly plans; reports")
+
+Rel("mt_backend", "openai", "sends food image or text for calorie analysis")
+Rel("openai", "mt_backend", "returns calorie estimation and optional summaries")
+
+@enduml
